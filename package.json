@@ -1,0 +1,16 @@
+{
+  "name": "test-capture",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "populategcs": "node populategcs.mjs",
+    "gcs": "node gcs.mjs",
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^6.11.0",
+    "execa": "^7.1.1",
+    "ipfs-http-client": "^60.0.1"
+  }
+}
