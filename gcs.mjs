@@ -29,7 +29,6 @@ async function startdump(filename, callback) {
     logger('stopping');
     await execa('sudo', ['pkill', '-15', 'tcpdump']);
     logger(`dump stored at ${filename}`);
-    return c
 }
 
 const serviceKey = path.join(process.cwd(), "keys.json");
@@ -70,20 +69,21 @@ async function downloadGCP(filename) {
     });
 }
 
-async function main() {
+const downloaded = ['4KB', '16KB', '64KB']
 
+async function main() {
     for (const size in bitSize) {
-        const filename = `test-${bitSize[size]}KB`
-        for (let i = 0; i < 5; i++) {
+        if (downloaded.indexOf(size) > -1) continue
+        const filename = `test-${size}`
+        for (let i = 1; i <= 5; i++) {
             logger(`Downloading file ${filename}`)
-            const dumpPath = path.join(process.cwd(), 'gcs', size, i)
+            const dumpPath = path.join(process.cwd(), 'gcs', size, i.toString())
             await startdump(dumpPath, async () => {
                 await downloadGCP(filename)
             })
             logger("Cleaning local")
             await cleanup(path.join(process.cwd(), filename))
             await wait(2)
-
         }
     }
 
