@@ -1,11 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import path from 'path'
 import fs from 'fs'
-import {execa} from 'execa'
-
-const dlSize = '16MB'
-const id = 1
-const folder = 'gcs'
+import { execa } from 'execa'
 
 const logger = (message) => {
     console.log(`${Date.now() / 1000},${message}`)
@@ -22,7 +18,7 @@ async function startdump(filename, callback) {
         '-w', `${filename}.pcap`
     ];
     const c = execa('sudo', args)
-    
+
     for await (const chunk of c.stderr) {
         if (chunk.toString().includes("listening on")) {
             logger("tcpdump started");
@@ -75,16 +71,22 @@ async function downloadGCP(filename) {
 }
 
 async function main() {
-    const filename = `test1-${bitSize[dlSize]}KB`
-    const dlPath = path.join(process.cwd(), folder, filename)
-    logger(`Downloading file ${filename}`)
-    await startdump(dlPath, async () => {
-        await downloadGCP(filename)
-        // clse()
-    })
-    logger("Cleaning local")
-    await cleanup(path.join(process.cwd(), filename))
-    await wait(2)
+
+    for (const size in bitSize) {
+        const filename = `test-${bitSize[size]}KB`
+        for (let i = 0; i < 5; i++) {
+            logger(`Downloading file ${filename}`)
+            const dumpPath = path.join(process.cwd(), 'gcs', size, i)
+            await startdump(dumpPath, async () => {
+                await downloadGCP(filename)
+            })
+            logger("Cleaning local")
+            await cleanup(path.join(process.cwd(), filename))
+            await wait(2)
+
+        }
+    }
+
 }
 
 main().catch(e => logger(e))
