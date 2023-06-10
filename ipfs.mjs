@@ -36,7 +36,6 @@ async function startdump(filename, callback) {
     logger('stopping');
     await execa('sudo', ['pkill', '-15', 'tcpdump']);
     logger(`dump stored at ${filename}`);
-    return c
 }
 
 async function cleanup() {

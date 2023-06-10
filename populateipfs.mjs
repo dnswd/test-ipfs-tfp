@@ -49,19 +49,21 @@ async function downloadGCP(filename) {
 }
 
 async function main() {
-    logger("Uploading files")
+    logger("Downloading files")
 
     for (const size in bitSize) {
+        logger(`Downloading test-${size}`)
         await downloadGCP(path.join(process.cwd(), `test-${size}`))
     }
 
     for (const size in bitSize) {
-        filePath = path.join(process.cwd(), `test-${size}`)
+        const filePath = path.join(process.cwd(), `test-${size}`)
         const readStream = fs.createReadStream(filePath)
         const res = await ipfs.add(readStream, {
             pin: true
         })
         console.log(`${size}: ${res.path},`)
+        logger(`Pinned test-${size}: ${res.path}`)
     }
 
     logger("Done")
